@@ -126,4 +126,186 @@ dental_caries_smoking_people
 dental_caries_smoking_people.plot(kind='bar', title='comparing_dental_caries_smoking_people',figsize=(10, 6))
 plt.show()
 
+# change datatype column gender 
+le = LabelEncoder()
+le.fit(smoking_df["gender"])
+smoking_df["gender"]=le.transform(smoking_df["gender"])  
+
+# change datatype column oral 
+l = LabelEncoder()
+l.fit(smoking_df["oral"])
+smoking_df["oral"]=l.transform(smoking_df["oral"])
+
+# change datatype column tartar 
+a = LabelEncoder()
+a.fit(smoking_df["tartar"])
+smoking_df["tartar"]=a.transform(smoking_df["tartar"])
+
+sns.pairplot(smoking_df, hue = 'smoking', vars = ['fasting blood sugar', 'hemoglobin', 'Gtp','Cholesterol'] )
+
+y_smoking_df = smoking_df['smoking']
+x_smoking_df = smoking_df.drop( 'smoking' , axis = 1)
+x_train, x_test, y_train, y_test = train_test_split(x_smoking_df, y_smoking_df, test_size=0.2, random_state=42)
+model = GaussianNB()
+model.fit(x_train , y_train)
+y_pred = model.predict(x_test)
+sum(y_pred == y_test) / len(y_pred)
+accuracy_score(y_test, y_pred)
+
+# GaussianNB Report
+print(classification_report(y_test, y_pred))
+
+kf = KFold(n_splits=10, shuffle=True, random_state=42)
+accuracies = []
+i = 0
+for train_index, test_index in kf.split(x_smoking_df,y_smoking_df):
+    i += 1
+    model = GaussianNB()
+    x_train, y_train = x_smoking_df.iloc[train_index], y_smoking_df.iloc[train_index]
+    x_test, y_test =  x_smoking_df.iloc[test_index], y_smoking_df.iloc[test_index]
+    model.fit(x_train, y_train)
+    y_pred = model.predict(x_test)
+    accuracy = accuracy_score(y_pred, y_test)
+    accuracies.append(accuracy)
+    print(i, ') accuracy = ', accuracy)
+
+print('Mean accuracy: ', np.array(accuracies).mean())
+
+cf_matrix = confusion_matrix(y_test, y_pred)
+print(cf_matrix)
+
+plt.figure(figsize = (10,6))
+sns.heatmap(cf_matrix,fmt='.0f' , annot = True)
+plt.title('confusion_matrix_heatmap_GaussianNB')
+plt.xlabel('Predicted Values')
+plt.ylabel('True Values')
+plt.show()
+
+pca = PCA(n_components=2)
+x_smoking_df_pca = pca.fit(x_smoking_df).transform(x_smoking_df)
+pca.explained_variance_ratio_
+
+#classification Random Forest
+y_smoking_df = smoking_df['smoking']
+x_smoking_df = smoking_df.drop( 'smoking' , axis = 1)
+x_train, x_test, y_train, y_test = train_test_split(x_smoking_df, y_smoking_df, test_size=0.2, random_state=42)
+model = RandomForestClassifier()
+model.fit(x_train, y_train)
+
+y_pred = model.predict(x_test)
+accuracy_score(y_test, y_pred)
+
+plt.figure(figsize = (14,6))
+model = RandomForestClassifier()
+model.fit(x_train, y_train)
+sort = model.feature_importances_.argsort()
+plt.barh(smoking_df.columns[sort], model.feature_importances_[sort])
+plt.xlabel("Feature Importance")
+
+# RandomForest Report
+print(classification_report(y_test, y_pred))
+
+cf_matrix = confusion_matrix(y_test, y_pred)
+print(cf_matrix)
+
+plt.figure(figsize = (10,6))
+sns.heatmap(cf_matrix,fmt='.0f' , annot = True)
+plt.title('confusion_matrix_heatmap_RandomForestClassifier')
+plt.xlabel('Predicted Values')
+plt.ylabel('True Values')
+plt.show()
+
+kf = KFold(n_splits=10, shuffle=True, random_state=42)
+accuracies = []
+i = 0
+for train_index, test_index in kf.split(x_smoking_df,y_smoking_df):
+    i += 1
+    model = RandomForestClassifier(random_state=42)
+    x_train, y_train = x_smoking_df.iloc[train_index], y_smoking_df.iloc[train_index]
+    x_test, y_test =  x_smoking_df.iloc[test_index], y_smoking_df.iloc[test_index]
+    model.fit(x_train, y_train)
+    y_pred = model.predict(x_test)
+    accuracy = accuracy_score(y_pred, y_test)
+    accuracies.append(accuracy)
+    print(i, ') accuracy = ', accuracy)
+
+print('Mean accuracy: ', np.array(accuracies).mean())
+
+def train_model(x , y , model , random_state = 42 , test_size= 0.2):
+  x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=test_size, random_state=random_state )
+  model.fit(x_train, y_train)
+  y_pred = model.predict(x_test)
+  print ('accuracy = ' , accuracy_score(y_pred, y_test ))
+
+
+x = smoking_df[['fasting blood sugar', 'dental caries' , 'Gtp' , 'Cholesterol']]
+y = smoking_df [ 'smoking']
+model = RandomForestClassifier(random_state=42)
+train_model(x,y,model)
+
+# Random forest (4 columns only) Report
+print(classification_report(y_test, y_pred))
+
+kf = KFold(n_splits=10, shuffle=True, random_state=42)
+accuracies = []
+i = 0
+for train_index, test_index in kf.split(x,y):
+    i += 1
+    model = RandomForestClassifier(random_state=42)
+    x_train, y_train = x.iloc[train_index], y.iloc[train_index]
+    x_test, y_test = x.iloc[test_index], y.iloc[test_index]
+    model.fit(x_train, y_train)
+    y_pred = model.predict(x_test)
+    accuracy = accuracy_score(y_pred, y_test)
+    accuracies.append(accuracy)
+    print(i, ') accuracy = ', accuracy)
+
+print('Mean accuracy: ', np.array(accuracies).mean())
+
+#clasification 3 Decision Tree
+y_smoking_df = smoking_df['smoking']
+x_smoking_df = smoking_df.drop( 'smoking' , axis = 1)
+x_train, x_test, y_train, y_test = train_test_split(x_smoking_df, y_smoking_df, test_size=0.2, random_state=42)
+model = DecisionTreeClassifier()
+model.fit(x_train , y_train)
+y_pred = model.predict(x_test)
+accuracy_score(y_test, y_pred)
+
+
+plt.figure(figsize = (14,6))
+model = DecisionTreeClassifier()
+model.fit(x_train, y_train)
+model.feature_importances_.argsort()
+model.feature_importances_[sort]
+plt.barh(smoking_df.columns[sort], model.feature_importances_[sort])
+plt.xlabel("Feature Importance")
+
+# Decision Tree Report
+print(classification_report(y_test, y_pred))
+
+kf = KFold(n_splits=10, shuffle=True, random_state=42)
+accuracies = []
+i = 0
+for train_index, test_index in kf.split(x_smoking_df,y_smoking_df):
+    i += 1
+    model = DecisionTreeClassifier(random_state=42)
+    x_train, y_train = x_smoking_df.iloc[train_index], y_smoking_df.iloc[train_index]
+    x_test, y_test =  x_smoking_df.iloc[test_index], y_smoking_df.iloc[test_index]
+    model.fit(x_train, y_train)
+    y_pred = model.predict(x_test)
+    accuracy = accuracy_score(y_pred, y_test)
+    accuracies.append(accuracy)
+    print(i, ') accuracy = ', accuracy)
+
+print('Mean accuracy: ', np.array(accuracies).mean())
+
+cf_matrix = confusion_matrix(y_test, y_pred)
+print(cf_matrix)
+
+plt.figure(figsize = (10,6))
+sns.heatmap(cf_matrix,fmt='.0f' , annot = True)
+plt.title('confusion_matrix_heatmap_DecisionTreeClassifier')
+plt.xlabel('Predicted Values')
+plt.ylabel('True Values')
+plt.show()
 
