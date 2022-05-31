@@ -39,12 +39,9 @@ plt.figure(figsize = (18,18))
 sns.heatmap(smoking_df.corr(), annot = True)
 plt.show()
 
-plt.figure(figsize = (10 , 6))
-plt.title ('comparison')
-plt.scatter (smoking_df['LDL'],smoking_df['Cholesterol'])
-plt.xlabel('LDL')
-plt.ylabel('cholesterol') 
-plt.show()
+fig = px.scatter(smoking_df, x="LDL", y="Cholesterol", color="smoking", title=
+        "LDL/Cholestrol")
+fig.show()
 
 smoking_df['BMI']= smoking_df ['weight(kg)'] / (smoking_df['height(cm)'] / 100 ) **2
 
