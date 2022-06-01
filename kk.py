@@ -4,7 +4,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 import plotly.express as px
+<<<<<<< HEAD
+=======
 
+>>>>>>> a3c34041c25b64042b68a8b719fe21f79d3ebddf
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.naive_bayes import GaussianNB
@@ -18,6 +21,10 @@ import streamlit as st
 from sklearn.metrics import classification_report
 from pandas.core.algorithms import mode
  
+st.header('Smoking Analysis') 
+st.write('This dataset is a collection of basic health biological signal data. ')
+st.write('The goal is to determine the presence or absence of smoking through bio-signals.')
+
 
 smoking_df = pd.read_csv('smoking.csv (1).zip')
 smoking_df
@@ -26,32 +33,39 @@ smoking_df.info()
 
 smoking_df.describe()
 
-smoking_df.hist(bins = 40, figsize = (40 ,40))
-plt.show()
+k = plt.figure(figsize = (18,18))
+smoking_df.hist(bins = 40)
+st.write(k)
 
 smoking_df.tail(10)
 
 smoking_df.head(10)
 
 smoking_df.corr()
- 
-plt.figure(figsize = (18,18))
+
+st.write('correlation between datas')
+H = plt.figure(figsize = (18,18))
 sns.heatmap(smoking_df.corr(), annot = True)
-plt.show()
+st.write( H )
 
 fig = px.scatter(smoking_df, x="LDL", y="Cholesterol", color="smoking", title=
         "LDL/Cholestrol")
+<<<<<<< HEAD
+st.write(fig)
+=======
 fig.show()
+>>>>>>> a3c34041c25b64042b68a8b719fe21f79d3ebddf
 
+st.write("Adding New Column")
 smoking_df['BMI']= smoking_df ['weight(kg)'] / (smoking_df['height(cm)'] / 100 ) **2
+#'BMI = weight(kg) / height(m) * height(m)'
+st.write(' BMI < 18.5  UNDERWEIGHT')
+st.write('18.5 <= BMI <= 24.5  HEALTYHY WEIGHT')
+st.write('24.5 < BMI <= 29.9 OVERWEIGHT') 
+st.write ('BMI >= 30 OBESITY')
+smoking_df
 
-# BMI = weight(kg) / height(m) * height(m)	
-# BMI < 18.5  UNDERWEIGHT
-# 18.5 <= BMI <= 24.5  HEALTYHY WEIGHT
-# 24.5 < BMI <= 29.9 OVERWEIGHT
-# BMI >= 30 OBESITY
-
-plt.figure(figsize=(60,60))
+v=plt.figure(figsize=(14,6))
 list_columns=['age','height(cm)', 'weight(kg)', 'waist(cm)',
        'eyesight(left)', 'eyesight(right)', 'hearing(left)', 'hearing(right)',
        'systolic', 'relaxation', 'fasting blood sugar', 'Cholesterol',
@@ -61,12 +75,13 @@ for i in range(len(list_columns)):
   plt.subplot(13,2,i+1)
   plt.title(list_columns[i]) 
   plt.violinplot(smoking_df[list_columns[i]])
-plt.show()
+st.write(v)
 
 smoking_df.nunique().sort_values()
 
+fig =plt.figure(figsize= (10,6))
 smoking_df['gender'].value_counts().plot.pie(explode=[0,0.3],autopct=lambda x: str(x)[:4] + '%', shadow =True)
-plt.show()
+st.write(fig)
 
 smoking_df['age'].max()
 
@@ -74,30 +89,35 @@ smoking_df['age'].mean()
 
 smoking_df['age'].min()
 
+st.write("percentage of smoking condidates")
+fig =plt.figure(figsize= (8,4))
 smoking_df['smoking'].value_counts().plot.pie(explode=[0,0.3],autopct=lambda x: str(x)[:4] + '%', shadow =True)
-plt.show()
+st.write(fig)
 
+st.write("smoking condidates")
 smoking_df.loc[smoking_df['smoking'] == 1]
 
 smoking_df['age'].value_counts()
 
-smoking_df['smoking'].sum()
+st.write("Number of smoking condidates")
+st.write(smoking_df['smoking'].sum())
 
 _x = smoking_df['age'].value_counts().index
 _y = smoking_df['age'].value_counts()
-
-plt.figure(figsize= (10,6))
+st.write("Age of smoking")
+fig = plt.figure(figsize= (10,6))
 plt.bar(_x,_y)
 plt.title('smoking_candidates')
 plt.xlabel('age')
 plt.ylabel(' number_of_smoking_condidates')
-plt.show()
+st.write(fig)
 
+st.write("Age Distributuion of Smokers")
 A = smoking_df[smoking_df['smoking']==1]
-plt.figure(figsize=(10,6))
+fig = plt.figure(figsize=(10,6))
 sns.distplot(A['age'],color = 'red')
 plt.title("Age Distributuion of Smokers")
-plt.show()
+st.write(fig)
 
 oldest_candidates = smoking_df['age'].sort_values(ascending = False)
 
@@ -107,23 +127,30 @@ youngest_condidates=smoking_df['age'].sort_values(ascending = True)
 
 youngest_condidates[:10].index
 
+st.write("Mean of age smoking")
 candidates_groupby_age_smoking = smoking_df.groupby('smoking')['age'].mean()
 candidates_groupby_age_smoking
 
+st.write("considering genders according to 'age','LDL','Cholesterol' ")
 candidates_groupby =smoking_df.groupby(['gender','smoking'])['age','LDL','Cholesterol'].mean()
 candidates_groupby
 
+plt.figure(figsize=(10,6))
 candidates_groupby.plot(kind='bar', title='comparing',figsize=(15, 6))
 plt.show()
 
+st.write("cosider tartar on candidates who are smoking ")
 tartar_smoking_people =smoking_df.groupby('tartar')['smoking'].sum()
-tartar_smoking_people
+fig = tartar_smoking_people
+st.write(fig)
 
+st.write("cosider dental caries on candidates who are smoking")
 dental_caries_smoking_people =smoking_df.groupby('dental caries')['smoking'].sum()
 dental_caries_smoking_people
 
+fig = plt.figure(figsize=(10,6))
 dental_caries_smoking_people.plot(kind='bar', title='comparing_dental_caries_smoking_people',figsize=(10, 6))
-plt.show()
+st.write(fig)
 
 # change datatype column gender 
 le = LabelEncoder()
@@ -140,7 +167,9 @@ a = LabelEncoder()
 a.fit(smoking_df["tartar"])
 smoking_df["tartar"]=a.transform(smoking_df["tartar"])
 
+
 sns.pairplot(smoking_df, hue = 'smoking', vars = ['fasting blood sugar', 'hemoglobin', 'Gtp','Cholesterol'] )
+
 
 y_smoking_df = smoking_df['smoking']
 x_smoking_df = smoking_df.drop( 'smoking' , axis = 1)
@@ -173,12 +202,12 @@ print('Mean accuracy: ', np.array(accuracies).mean())
 cf_matrix = confusion_matrix(y_test, y_pred)
 print(cf_matrix)
 
-plt.figure(figsize = (10,6))
+l= plt.figure(figsize = (10,6))
 sns.heatmap(cf_matrix,fmt='.0f' , annot = True)
 plt.title('confusion_matrix_heatmap_GaussianNB')
 plt.xlabel('Predicted Values')
 plt.ylabel('True Values')
-plt.show()
+st.write(l)
 
 pca = PCA(n_components=2)
 x_smoking_df_pca = pca.fit(x_smoking_df).transform(x_smoking_df)
@@ -207,12 +236,12 @@ print(classification_report(y_test, y_pred))
 cf_matrix = confusion_matrix(y_test, y_pred)
 print(cf_matrix)
 
-plt.figure(figsize = (10,6))
+v = plt.figure(figsize = (10,6))
 sns.heatmap(cf_matrix,fmt='.0f' , annot = True)
 plt.title('confusion_matrix_heatmap_RandomForestClassifier')
 plt.xlabel('Predicted Values')
 plt.ylabel('True Values')
-plt.show()
+st.write(v)
 
 kf = KFold(n_splits=10, shuffle=True, random_state=42)
 accuracies = []
@@ -301,10 +330,9 @@ print('Mean accuracy: ', np.array(accuracies).mean())
 cf_matrix = confusion_matrix(y_test, y_pred)
 print(cf_matrix)
 
-plt.figure(figsize = (10,6))
+p = plt.figure(figsize = (10,6))
 sns.heatmap(cf_matrix,fmt='.0f' , annot = True)
 plt.title('confusion_matrix_heatmap_DecisionTreeClassifier')
 plt.xlabel('Predicted Values')
 plt.ylabel('True Values')
-plt.show()
-
+st.write(p)
