@@ -4,10 +4,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 import plotly.express as px
-<<<<<<< HEAD
-=======
-
->>>>>>> a3c34041c25b64042b68a8b719fe21f79d3ebddf
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.naive_bayes import GaussianNB
@@ -27,13 +23,19 @@ st.write('The goal is to determine the presence or absence of smoking through bi
 
 
 smoking_df = pd.read_csv('smoking.csv (1).zip')
-smoking_df
 
-smoking_df.info()
 
+if st.checkbox('DATA SET') :
+  st.write('The raw data:')
+  st.write(smoking_df)
+
+def get_downloadable_data (df):
+  return df.to_csv().encode('utf-8')
+
+st.download_button('DOWNLOAD DATA SET' , get_downloadable_data(smoking_df), file_name='smoking.csv' )  
 smoking_df.describe()
 
-k = plt.figure(figsize = (18,18))
+k  = plt.figure(figsize = (18,18))
 smoking_df.hist(bins = 40)
 st.write(k)
 
@@ -43,76 +45,101 @@ smoking_df.head(10)
 
 smoking_df.corr()
 
-st.write('correlation between datas')
-H = plt.figure(figsize = (18,18))
-sns.heatmap(smoking_df.corr(), annot = True)
-st.write( H )
+if st.checkbox('CORRELATIONS ') :
+  st.write('THE CORRELATIONS:')
+  H = plt.figure(figsize = (18,18))
+  sns.heatmap(smoking_df.corr(), annot = True)
+  st.write(H)
 
-fig = px.scatter(smoking_df, x="LDL", y="Cholesterol", color="smoking", title=
+
+
+
+
+
+if st.checkbox('SHOWING LDL AND CHOLESTEROL OF CONDIDATES IN SCATTER ') :
+  fig = px.scatter(smoking_df, x="LDL", y="Cholesterol", color="smoking", title=
         "LDL/Cholestrol")
-<<<<<<< HEAD
-st.write(fig)
-=======
-fig.show()
->>>>>>> a3c34041c25b64042b68a8b719fe21f79d3ebddf
+  st.write(fig)
 
-st.write("Adding New Column")
 smoking_df['BMI']= smoking_df ['weight(kg)'] / (smoking_df['height(cm)'] / 100 ) **2
-#'BMI = weight(kg) / height(m) * height(m)'
-st.write(' BMI < 18.5  UNDERWEIGHT')
-st.write('18.5 <= BMI <= 24.5  HEALTYHY WEIGHT')
-st.write('24.5 < BMI <= 29.9 OVERWEIGHT') 
-st.write ('BMI >= 30 OBESITY')
-smoking_df
 
-v=plt.figure(figsize=(14,6))
-list_columns=['age','height(cm)', 'weight(kg)', 'waist(cm)',
+if st.checkbox('Adding New Column'):
+  st.write("Adding New Column :")
+  st.write(smoking_df)
+
+if st.checkbox('BMI INFORMATION'):
+  #'BMI = weight(kg) / height(m) * height(m)'
+  st.write(' BMI < 18.5  UNDERWEIGHT')
+  st.write('18.5 <= BMI <= 24.5  HEALTYHY WEIGHT')
+  st.write('24.5 < BMI <= 29.9 OVERWEIGHT') 
+  st.write ('BMI >= 30 OBESITY')
+
+
+
+if st.checkbox('VIOLIN PLOT ACCORDING TO SOME COLUMNS') :
+  v=plt.figure(figsize=(14,6))
+  list_columns=['age','height(cm)', 'weight(kg)', 'waist(cm)',
        'eyesight(left)', 'eyesight(right)', 'hearing(left)', 'hearing(right)',
        'systolic', 'relaxation', 'fasting blood sugar', 'Cholesterol',
        'triglyceride', 'HDL', 'LDL', 'dental caries', 'hemoglobin', 'Urine protein',
        'serum creatinine', 'AST', 'ALT', 'Gtp','BMI']
-for i in range(len(list_columns)):
-  plt.subplot(13,2,i+1)
-  plt.title(list_columns[i]) 
-  plt.violinplot(smoking_df[list_columns[i]])
-st.write(v)
+  for i in range(len(list_columns)):
+    plt.subplot(13,2,i+1)
+    plt.title(list_columns[i]) 
+    plt.violinplot(smoking_df[list_columns[i]])
+  st.write(v)
 
 smoking_df.nunique().sort_values()
 
-fig =plt.figure(figsize= (10,6))
-smoking_df['gender'].value_counts().plot.pie(explode=[0,0.3],autopct=lambda x: str(x)[:4] + '%', shadow =True)
-st.write(fig)
 
-smoking_df['age'].max()
+st.header("percentage of smoking condidates")
 
-smoking_df['age'].mean()
+col_1, col_2 = st.columns(2)
 
-smoking_df['age'].min()
+with col_1 :
+  fig = plt.figure(figsize= (8,4))
+  smoking_df['gender'].value_counts().plot.pie(explode=[0,0.3],autopct=lambda x: str(x)[:4] + '%', shadow =True)
+  st.write(fig)
+  st.caption('showing percentage of genders of condidates')
 
-st.write("percentage of smoking condidates")
-fig =plt.figure(figsize= (8,4))
-smoking_df['smoking'].value_counts().plot.pie(explode=[0,0.3],autopct=lambda x: str(x)[:4] + '%', shadow =True)
-st.write(fig)
+with col_2 :
+  fig =plt.figure(figsize= (8,4))
+  smoking_df['smoking'].value_counts().plot.pie(explode=[0,0.3],autopct=lambda x: str(x)[:4] + '%', shadow =True)
+  st.write(fig)
+  st.caption ('smoking and non smoking')
 
-st.write("smoking condidates")
-smoking_df.loc[smoking_df['smoking'] == 1]
+
+if st.checkbox('Age of condidates') :
+   st.write("Age of oldest condidates  : ")
+   st.write(smoking_df['age'].max())
+   st.write("Mean of ages : ")
+   st.write(smoking_df['age'].mean())
+   st.write(" Age of Yongest condidates: ")
+   st.write(smoking_df['age'].min())
+
+if st.checkbox('smoking condidates') :
+  st.write("smoking condidates : ")
+  smoking_df.loc[smoking_df['smoking'] == 1]
 
 smoking_df['age'].value_counts()
 
-st.write("Number of smoking condidates")
-st.write(smoking_df['smoking'].sum())
+if st.checkbox('Number of smoking condidates') :
+   st.write("Number of smoking condidates :")
+   st.write(smoking_df['smoking'].sum())
 
-_x = smoking_df['age'].value_counts().index
-_y = smoking_df['age'].value_counts()
-st.write("Age of smoking")
-fig = plt.figure(figsize= (10,6))
-plt.bar(_x,_y)
-plt.title('smoking_candidates')
-plt.xlabel('age')
-plt.ylabel(' number_of_smoking_condidates')
-st.write(fig)
+if st.checkbox ('AGE OF SMOKING'):
+  _x = smoking_df['age'].value_counts().index
+  _y = smoking_df['age'].value_counts()
+  fig = plt.figure(figsize= (10,6))
+  plt.bar(_x,_y)
+  plt.title('smoking_candidates')
+  plt.xlabel('age')
+  plt.ylabel(' number_of_smoking_condidates')
+  st.write("AGE OF SMOKING :")
+  st.write(fig)
+  
 
-st.write("Age Distributuion of Smokers")
+st.header("Age Distributuion of Smokers")
 A = smoking_df[smoking_df['smoking']==1]
 fig = plt.figure(figsize=(10,6))
 sns.distplot(A['age'],color = 'red')
@@ -120,37 +147,37 @@ plt.title("Age Distributuion of Smokers")
 st.write(fig)
 
 oldest_candidates = smoking_df['age'].sort_values(ascending = False)
-
-oldest_candidates[:15].index
+if st.checkbox('oldest_candidates ID') :
+  oldest_candidates[:15].index
 
 youngest_condidates=smoking_df['age'].sort_values(ascending = True)
+if st.checkbox(' 10 YOUNGEST_candidates ID') :
+   youngest_condidates[:10].index
 
-youngest_condidates[:10].index
+if st.checkbox('Mean of age smoking') :
+  candidates_groupby_age_smoking = smoking_df.groupby('smoking')['age'].mean()
+  candidates_groupby_age_smoking
 
-st.write("Mean of age smoking")
-candidates_groupby_age_smoking = smoking_df.groupby('smoking')['age'].mean()
-candidates_groupby_age_smoking
 
-st.write("considering genders according to 'age','LDL','Cholesterol' ")
-candidates_groupby =smoking_df.groupby(['gender','smoking'])['age','LDL','Cholesterol'].mean()
-candidates_groupby
+if st.checkbox('considering genders according to age LDL Cholesterol'):
+  candidates_groupby =smoking_df.groupby(['gender','smoking'])['age','LDL','Cholesterol'].mean()
+  candidates_groupby
+  b = plt.figure(figsize=(10,6))
+  candidates_groupby.plot(kind='bar', title='comparing',figsize=(15, 6))
+  st.write(b)
 
-plt.figure(figsize=(10,6))
-candidates_groupby.plot(kind='bar', title='comparing',figsize=(15, 6))
-plt.show()
+if st.checkbox("cosider tartar on candidates who are smoking ") :
+  tartar_smoking_people =smoking_df.groupby('tartar')['smoking'].sum()
+  fig = tartar_smoking_people
+  st.write(fig)
 
-st.write("cosider tartar on candidates who are smoking ")
-tartar_smoking_people =smoking_df.groupby('tartar')['smoking'].sum()
-fig = tartar_smoking_people
-st.write(fig)
 
-st.write("cosider dental caries on candidates who are smoking")
-dental_caries_smoking_people =smoking_df.groupby('dental caries')['smoking'].sum()
-dental_caries_smoking_people
-
-fig = plt.figure(figsize=(10,6))
-dental_caries_smoking_people.plot(kind='bar', title='comparing_dental_caries_smoking_people',figsize=(10, 6))
-st.write(fig)
+if st.checkbox("cosider dental caries on candidates who are smoking") :
+  dental_caries_smoking_people =smoking_df.groupby('dental caries')['smoking'].sum()
+  dental_caries_smoking_people
+  fig = plt.figure(figsize=(10,6))
+  dental_caries_smoking_people.plot(kind='bar', title='comparing_dental_caries_smoking_people',figsize=(10, 6))
+  st.write(fig)
 
 # change datatype column gender 
 le = LabelEncoder()
@@ -167,51 +194,40 @@ a = LabelEncoder()
 a.fit(smoking_df["tartar"])
 smoking_df["tartar"]=a.transform(smoking_df["tartar"])
 
-
+fig = plt.figure(figsize = (10 , 6))
 sns.pairplot(smoking_df, hue = 'smoking', vars = ['fasting blood sugar', 'hemoglobin', 'Gtp','Cholesterol'] )
+st.write(fig)
 
 
 y_smoking_df = smoking_df['smoking']
-x_smoking_df = smoking_df.drop( 'smoking' , axis = 1)
+x_smoking_df = smoking_df.drop( 'smoking' , axis = 1) 
 x_train, x_test, y_train, y_test = train_test_split(x_smoking_df, y_smoking_df, test_size=0.2, random_state=42)
 model = GaussianNB()
 model.fit(x_train , y_train)
 y_pred = model.predict(x_test)
-sum(y_pred == y_test) / len(y_pred)
-accuracy_score(y_test, y_pred)
 
-# GaussianNB Report
-print(classification_report(y_test, y_pred))
+if st.sidebar.checkbox(" GaussianNB Report") :
+   #  GaussianNB Report
+  st.write(classification_report(y_test, y_pred))
 
-kf = KFold(n_splits=10, shuffle=True, random_state=42)
-accuracies = []
-i = 0
-for train_index, test_index in kf.split(x_smoking_df,y_smoking_df):
-    i += 1
-    model = GaussianNB()
-    x_train, y_train = x_smoking_df.iloc[train_index], y_smoking_df.iloc[train_index]
-    x_test, y_test =  x_smoking_df.iloc[test_index], y_smoking_df.iloc[test_index]
-    model.fit(x_train, y_train)
-    y_pred = model.predict(x_test)
-    accuracy = accuracy_score(y_pred, y_test)
-    accuracies.append(accuracy)
-    print(i, ') accuracy = ', accuracy)
 
-print('Mean accuracy: ', np.array(accuracies).mean())
+if st.sidebar.checkbox("CONFUSION MATRIX GaussianNB") :
+  cf_matrix = confusion_matrix(y_test, y_pred)
+  st.write(cf_matrix)
 
-cf_matrix = confusion_matrix(y_test, y_pred)
-print(cf_matrix)
+if st.sidebar.checkbox("CONFUSION MATRIX HEAT MAP GaussianNB") :
+  l= plt.figure(figsize = (10,6))
+  sns.heatmap(cf_matrix,fmt='.0f' , annot = True)
+  plt.title('confusion_matrix_heatmap_GaussianNB')
+  plt.xlabel('Predicted Values')
+  plt.ylabel('True Values')
+  st.write(l)
 
-l= plt.figure(figsize = (10,6))
-sns.heatmap(cf_matrix,fmt='.0f' , annot = True)
-plt.title('confusion_matrix_heatmap_GaussianNB')
-plt.xlabel('Predicted Values')
-plt.ylabel('True Values')
-st.write(l)
 
-pca = PCA(n_components=2)
-x_smoking_df_pca = pca.fit(x_smoking_df).transform(x_smoking_df)
-pca.explained_variance_ratio_
+if st.sidebar.checkbox("PCA") :
+  pca = PCA(n_components=2)
+  x_smoking_df_pca = pca.fit(x_smoking_df).transform(x_smoking_df)
+  pca.explained_variance_ratio_
 
 #classification Random Forest
 y_smoking_df = smoking_df['smoking']
@@ -223,41 +239,35 @@ model.fit(x_train, y_train)
 y_pred = model.predict(x_test)
 accuracy_score(y_test, y_pred)
 
-plt.figure(figsize = (14,6))
-model = RandomForestClassifier()
-model.fit(x_train, y_train)
-sort = model.feature_importances_.argsort()
-plt.barh(smoking_df.columns[sort], model.feature_importances_[sort])
-plt.xlabel("Feature Importance")
+if st.sidebar.checkbox(" Feature Importance Random Forest ") :
+  i = plt.figure(figsize = (14,6))
+  model = RandomForestClassifier()
+  model.fit(x_train, y_train)
+  sort = model.feature_importances_.argsort()
+  plt.barh(smoking_df.columns[sort], model.feature_importances_[sort])
+  plt.xlabel("Feature Importance")
+  st.write(i) 
 
+
+if st.sidebar.checkbox(" RandomForest Report") :
 # RandomForest Report
-print(classification_report(y_test, y_pred))
+  st.write(classification_report(y_test, y_pred))
 
-cf_matrix = confusion_matrix(y_test, y_pred)
-print(cf_matrix)
 
-v = plt.figure(figsize = (10,6))
-sns.heatmap(cf_matrix,fmt='.0f' , annot = True)
-plt.title('confusion_matrix_heatmap_RandomForestClassifier')
-plt.xlabel('Predicted Values')
-plt.ylabel('True Values')
-st.write(v)
+if st.sidebar.checkbox("CONFUSION MATRIX RandomForest") :
+  cf_matrix = confusion_matrix(y_test, y_pred)
+  st.write(cf_matrix)
 
-kf = KFold(n_splits=10, shuffle=True, random_state=42)
-accuracies = []
-i = 0
-for train_index, test_index in kf.split(x_smoking_df,y_smoking_df):
-    i += 1
-    model = RandomForestClassifier(random_state=42)
-    x_train, y_train = x_smoking_df.iloc[train_index], y_smoking_df.iloc[train_index]
-    x_test, y_test =  x_smoking_df.iloc[test_index], y_smoking_df.iloc[test_index]
-    model.fit(x_train, y_train)
-    y_pred = model.predict(x_test)
-    accuracy = accuracy_score(y_pred, y_test)
-    accuracies.append(accuracy)
-    print(i, ') accuracy = ', accuracy)
+if st.sidebar.checkbox("CONFUSION MATRIX HEAT MAP RandomForest") :
+  v = plt.figure(figsize = (10,6))
+  sns.heatmap(cf_matrix,fmt='.0f' , annot = True)
+  plt.title('confusion_matrix_heatmap_RandomForestClassifier')
+  plt.xlabel('Predicted Values')
+  plt.ylabel('True Values')
+  st.write(v)
 
-print('Mean accuracy: ', np.array(accuracies).mean())
+
+
 
 def train_model(x , y , model , random_state = 42 , test_size= 0.2):
   x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=test_size, random_state=random_state )
@@ -299,40 +309,124 @@ model.fit(x_train , y_train)
 y_pred = model.predict(x_test)
 accuracy_score(y_test, y_pred)
 
+if st.sidebar.checkbox(" Feature Importance Decision Tree ") :
+  o = plt.figure(figsize = (14,6))
+  model = DecisionTreeClassifier()
+  model.fit(x_train, y_train)
+  model.feature_importances_.argsort()
+  model.feature_importances_[sort]
+  plt.barh(smoking_df.columns[sort], model.feature_importances_[sort])
+  plt.xlabel("Feature Importance")
+  st.write(o)
 
-plt.figure(figsize = (14,6))
-model = DecisionTreeClassifier()
-model.fit(x_train, y_train)
-model.feature_importances_.argsort()
-model.feature_importances_[sort]
-plt.barh(smoking_df.columns[sort], model.feature_importances_[sort])
-plt.xlabel("Feature Importance")
-
+if st.sidebar.checkbox(" Decision Tree Report") :
 # Decision Tree Report
-print(classification_report(y_test, y_pred))
+   st.write(classification_report(y_test, y_pred))
 
-kf = KFold(n_splits=10, shuffle=True, random_state=42)
-accuracies = []
-i = 0
-for train_index, test_index in kf.split(x_smoking_df,y_smoking_df):
-    i += 1
-    model = DecisionTreeClassifier(random_state=42)
-    x_train, y_train = x_smoking_df.iloc[train_index], y_smoking_df.iloc[train_index]
-    x_test, y_test =  x_smoking_df.iloc[test_index], y_smoking_df.iloc[test_index]
-    model.fit(x_train, y_train)
+if st.sidebar.checkbox("CONFUSION MATRIX Decisiontree") :
+  cf_matrix = confusion_matrix(y_test, y_pred)
+  st.write(cf_matrix)
+
+
+if st.sidebar.checkbox("CONFUSION MATRIX HEAT MAP Decisiontree") :
+  p = plt.figure(figsize = (10,6))
+  sns.heatmap(cf_matrix,fmt='.0f' , annot = True)
+  plt.title('confusion_matrix_heatmap_DecisionTreeClassifier')
+  plt.xlabel('Predicted Values')
+  plt.ylabel('True Values')
+  st.write(p)
+
+
+
+with st.expander('SHOW ACCURACY OF MODELS'): 
+  select_model = st.selectbox('select model :', ['Randomforest' ,'GaussianNB', 'DecisionTreeClassifier'] )
+  if select_model == 'GaussianNB' :
+    y_smoking_df = smoking_df['smoking']
+    x_smoking_df = smoking_df.drop( 'smoking' , axis = 1) 
+    x_train, x_test, y_train, y_test = train_test_split(x_smoking_df, y_smoking_df, test_size=0.2, random_state=42)
+    model = GaussianNB()
+    model.fit(x_train , y_train)
     y_pred = model.predict(x_test)
-    accuracy = accuracy_score(y_pred, y_test)
-    accuracies.append(accuracy)
-    print(i, ') accuracy = ', accuracy)
+    sum(y_pred == y_test) / len(y_pred)
+    accuracy_score(y_test, y_pred)
+  elif  select_model == 'Randomforest' :
+       y_smoking_df = smoking_df['smoking']
+       x_smoking_df = smoking_df.drop( 'smoking' , axis = 1) 
+       x_train, x_test, y_train, y_test = train_test_split(x_smoking_df, y_smoking_df, test_size=0.2, random_state=42)
+       model = RandomForestClassifier()
+       model.fit(x_train, y_train)
+       y_pred = model.predict(x_test)
+       st.write(accuracy_score(y_test, y_pred))   
+  else :
+        model = DecisionTreeClassifier()
+        model.fit(x_train , y_train)
+        y_pred = model.predict(x_test)
+        st.write(accuracy_score(y_test, y_pred))
 
-print('Mean accuracy: ', np.array(accuracies).mean())
 
-cf_matrix = confusion_matrix(y_test, y_pred)
-print(cf_matrix)
 
-p = plt.figure(figsize = (10,6))
-sns.heatmap(cf_matrix,fmt='.0f' , annot = True)
-plt.title('confusion_matrix_heatmap_DecisionTreeClassifier')
-plt.xlabel('Predicted Values')
-plt.ylabel('True Values')
-st.write(p)
+
+
+with st.expander('SHOW KFOLD ACCURACIES '): 
+    select_model = st.selectbox('select model :', ['RandomForestClassifier' ,'GaussiaNNB', 'Descisiontree'] )
+    if select_model == 'GaussiaNNB' :
+      model = GaussianNB()
+      y_smoking_df = smoking_df['smoking']
+      x_smoking_df = smoking_df.drop( 'smoking' , axis = 1) 
+      x_train, x_test, y_train, y_test = train_test_split(x_smoking_df, y_smoking_df, test_size=0.2, random_state=42)
+      kf = KFold(n_splits=10, shuffle=True, random_state=42)
+      accuracies = []
+      i = 0
+      for train_index, test_index in kf.split(x_smoking_df,y_smoking_df):
+         i += 1
+         x_train, y_train = x_smoking_df.iloc[train_index], y_smoking_df.iloc[train_index]
+         x_test, y_test =  x_smoking_df.iloc[test_index], y_smoking_df.iloc[test_index]
+         model.fit(x_train, y_train)
+         y_pred = model.predict(x_test)
+         accuracy = accuracy_score(y_pred, y_test)
+         accuracies.append(accuracy)
+         st.write(i, ') accuracy = ', accuracy)
+  
+  
+      st.write('Mean accuracy: ', np.array(accuracies).mean())
+    elif  select_model == 'RandomForestClassifier' :
+          y_smoking_df = smoking_df['smoking']
+          x_smoking_df = smoking_df.drop( 'smoking' , axis = 1) 
+          x_train, x_test, y_train, y_test = train_test_split(x_smoking_df, y_smoking_df, test_size=0.2, random_state=42)
+          model = RandomForestClassifier()  
+          kf = KFold(n_splits=10, shuffle=True, random_state=42)
+          accuracies = []
+          i = 0
+          for train_index, test_index in kf.split(x_smoking_df,y_smoking_df):
+            i += 1
+            model = RandomForestClassifier(random_state=42)
+            x_train, y_train = x_smoking_df.iloc[train_index], y_smoking_df.iloc[train_index]
+            x_test, y_test =  x_smoking_df.iloc[test_index], y_smoking_df.iloc[test_index]
+            model.fit(x_train, y_train)
+            y_pred = model.predict(x_test)
+            accuracy = accuracy_score(y_pred, y_test)
+            accuracies.append(accuracy)
+            st.write(i, ') accuracy = ', accuracy)
+
+
+          st.write('Mean accuracy: ', np.array(accuracies).mean())
+    else :
+            y_smoking_df = smoking_df['smoking']
+            x_smoking_df = smoking_df.drop( 'smoking' , axis = 1) 
+            x_train, x_test, y_train, y_test = train_test_split(x_smoking_df, y_smoking_df, test_size=0.2, random_state=42)
+            model = DecisionTreeClassifier()
+            kf = KFold(n_splits=10, shuffle=True, random_state=42)
+            accuracies = []
+            i = 0
+            for train_index, test_index in kf.split(x_smoking_df,y_smoking_df):
+              i += 1
+              model = DecisionTreeClassifier(random_state=42)
+              x_train, y_train = x_smoking_df.iloc[train_index], y_smoking_df.iloc[train_index]
+              x_test, y_test =  x_smoking_df.iloc[test_index], y_smoking_df.iloc[test_index]
+              model.fit(x_train, y_train)
+              y_pred = model.predict(x_test)
+              accuracy = accuracy_score(y_pred, y_test)
+              accuracies.append(accuracy)
+              st.write(i, ') accuracy = ', accuracy)
+
+            st.write('Mean accuracy: ', np.array(accuracies).mean())
