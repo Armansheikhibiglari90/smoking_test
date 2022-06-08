@@ -17,7 +17,7 @@ import streamlit as st
 from sklearn.metrics import classification_report
 from pandas.core.algorithms import mode
  
-st.header('Smoking Analysis') 
+st.header('SMOKING ANALYSIS') 
 st.write('This dataset is a collection of basic health biological signal data. ')
 st.write('The goal is to determine the presence or absence of smoking through bio-signals.')
 
@@ -35,9 +35,10 @@ def get_downloadable_data (df):
 st.download_button('DOWNLOAD DATA SET' , get_downloadable_data(smoking_df), file_name='smoking.csv' )  
 smoking_df.describe()
 
-k  = plt.figure(figsize = (18,18))
+
+fig = plt.figure(figsize = (40,40))
 smoking_df.hist(bins = 40)
-st.write(k)
+st.pyplot(fig)
 
 smoking_df.tail(10)
 
@@ -50,11 +51,6 @@ if st.checkbox('CORRELATIONS ') :
   H = plt.figure(figsize = (18,18))
   sns.heatmap(smoking_df.corr(), annot = True)
   st.write(H)
-
-
-
-
-
 
 if st.checkbox('SHOWING LDL AND CHOLESTEROL OF CONDIDATES IN SCATTER ') :
   fig = px.scatter(smoking_df, x="LDL", y="Cholesterol", color="smoking", title=
@@ -77,7 +73,7 @@ if st.checkbox('BMI INFORMATION'):
 
 
 if st.checkbox('VIOLIN PLOT ACCORDING TO SOME COLUMNS') :
-  v=plt.figure(figsize=(14,6))
+  v=plt.figure(figsize=(60,60))
   list_columns=['age','height(cm)', 'weight(kg)', 'waist(cm)',
        'eyesight(left)', 'eyesight(right)', 'hearing(left)', 'hearing(right)',
        'systolic', 'relaxation', 'fasting blood sugar', 'Cholesterol',
@@ -139,13 +135,28 @@ if st.checkbox ('AGE OF SMOKING'):
   st.write(fig)
   
 
-st.header("Age Distributuion of Smokers")
-A = smoking_df[smoking_df['smoking']==1]
-fig = plt.figure(figsize=(10,6))
-sns.distplot(A['age'],color = 'red')
-plt.title("Age Distributuion of Smokers")
-st.write(fig)
-
+st.header("SOME DISTRIBUTION OF SMOKERS ")
+with st.expander('CHOOSE CRITERIAN'): 
+ select_criterian = st.selectbox('select model :', ['CHOLESTEROL', 'weight(kg)' , 'hemoglobin' ])
+ if select_criterian  == 'CHOLESTEROL' :
+   A = smoking_df[smoking_df['smoking']==1]
+   fig = plt.figure(figsize=(10,6))
+   sns.distplot(A['Cholesterol'],color = 'red')
+   plt.title("Cholesterol Distribution of Smokers")
+   st.write(fig)
+ elif select_criterian  == 'weight(kg)' :
+     A = smoking_df[smoking_df['smoking']==1]
+     fig = plt.figure(figsize=(10,6))
+     sns.distplot(A['weight(kg)'],color = 'red')
+     plt.title("weight Distribuuion of Smokers")
+     st.write(fig)
+ else :
+     A = smoking_df[smoking_df['smoking']==1]
+     fig = plt.figure(figsize=(10,6))
+     sns.distplot(A['hemoglobin'],color = 'red')
+     plt.title("hemoglobin Distribution of Smokers")
+     st.write(fig)
+          
 oldest_candidates = smoking_df['age'].sort_values(ascending = False)
 if st.checkbox('oldest_candidates ID') :
   oldest_candidates[:15].index
@@ -195,7 +206,7 @@ a.fit(smoking_df["tartar"])
 smoking_df["tartar"]=a.transform(smoking_df["tartar"])
 
 fig = plt.figure(figsize = (10 , 6))
-sns.pairplot(smoking_df, hue = 'smoking', vars = ['fasting blood sugar', 'hemoglobin', 'Gtp','Cholesterol'] )
+sns.pairplot(smoking_df, hue = 'smoking', vars = ['fasting blood sugar', 'hemoglobin', 'Gtp','Cholesterol'])
 st.write(fig)
 
 
@@ -267,39 +278,6 @@ if st.sidebar.checkbox("CONFUSION MATRIX HEAT MAP RandomForest") :
   st.write(v)
 
 
-
-
-def train_model(x , y , model , random_state = 42 , test_size= 0.2):
-  x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=test_size, random_state=random_state )
-  model.fit(x_train, y_train)
-  y_pred = model.predict(x_test)
-  print ('accuracy = ' , accuracy_score(y_pred, y_test ))
-
-
-x = smoking_df[['fasting blood sugar', 'dental caries' , 'Gtp' , 'Cholesterol']]
-y = smoking_df [ 'smoking']
-model = RandomForestClassifier(random_state=42)
-train_model(x,y,model)
-
-# Random forest (4 columns only) Report
-print(classification_report(y_test, y_pred))
-
-kf = KFold(n_splits=10, shuffle=True, random_state=42)
-accuracies = []
-i = 0
-for train_index, test_index in kf.split(x,y):
-    i += 1
-    model = RandomForestClassifier(random_state=42)
-    x_train, y_train = x.iloc[train_index], y.iloc[train_index]
-    x_test, y_test = x.iloc[test_index], y.iloc[test_index]
-    model.fit(x_train, y_train)
-    y_pred = model.predict(x_test)
-    accuracy = accuracy_score(y_pred, y_test)
-    accuracies.append(accuracy)
-    print(i, ') accuracy = ', accuracy)
-
-print('Mean accuracy: ', np.array(accuracies).mean())
-
 #clasification 3 Decision Tree
 y_smoking_df = smoking_df['smoking']
 x_smoking_df = smoking_df.drop( 'smoking' , axis = 1)
@@ -314,7 +292,6 @@ if st.sidebar.checkbox(" Feature Importance Decision Tree ") :
   model = DecisionTreeClassifier()
   model.fit(x_train, y_train)
   model.feature_importances_.argsort()
-  model.feature_importances_[sort]
   plt.barh(smoking_df.columns[sort], model.feature_importances_[sort])
   plt.xlabel("Feature Importance")
   st.write(o)
@@ -362,8 +339,6 @@ with st.expander('SHOW ACCURACY OF MODELS'):
         model.fit(x_train , y_train)
         y_pred = model.predict(x_test)
         st.write(accuracy_score(y_test, y_pred))
-
-
 
 
 
@@ -430,3 +405,45 @@ with st.expander('SHOW KFOLD ACCURACIES '):
               st.write(i, ') accuracy = ', accuracy)
 
             st.write('Mean accuracy: ', np.array(accuracies).mean())
+
+
+
+
+def train_model(x , y , model , random_state = 42 , test_size= 0.2):
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=test_size, random_state=random_state )
+    model.fit(x_train, y_train)
+    y_pred = model.predict(x_test)
+    print ('accuracy = ' , accuracy_score(y_pred, y_test ))
+
+if st.checkbox("RandomForestClassifier on 'hemoglobin', 'gender' , 'Gtp' , 'triglyceride', 'height(cm)'") :
+     x = smoking_df[['hemoglobin', 'gender' , 'Gtp' , 'triglyceride', 'height(cm)']]
+     y = smoking_df [ 'smoking']
+     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+     model = RandomForestClassifier()
+     model.fit(x_train, y_train)
+     y_pred = model.predict(x_test)
+     st.write(accuracy_score(y_test, y_pred))
+
+
+x = smoking_df[['hemoglobin', 'gender' , 'Gtp' , 'triglyceride', 'height(cm)']]
+y = smoking_df [ 'smoking']
+ 
+if st.checkbox("Random forest (5 columns only) Report") :
+ # Random forest (5 columns only) Report
+  st.write(classification_report(y_test, y_pred))
+if st.checkbox("Random forest KFOLD (5 columns only)") :
+  kf = KFold(n_splits=10, shuffle=True, random_state=42)
+  accuracies = []
+  i = 0
+  for train_index, test_index in kf.split(x,y):
+      i += 1
+      model = RandomForestClassifier(random_state=42)
+      x_train, y_train = x.iloc[train_index], y.iloc[train_index]
+      x_test, y_test = x.iloc[test_index], y.iloc[test_index]
+      model.fit(x_train, y_train)
+      y_pred = model.predict(x_test)
+      accuracy = accuracy_score(y_pred, y_test)
+      accuracies.append(accuracy)
+      st.write(i, ') accuracy = ', accuracy)
+
+      st.write('Mean accuracy: ', np.array(accuracies).mean())    
