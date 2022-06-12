@@ -20,7 +20,7 @@ from pandas.core.algorithms import mode
 st.header('SMOKING ANALYSIS') 
 st.write('This dataset is a collection of basic health biological signal data. ')
 st.write('The goal is to determine the presence or absence of smoking through bio-signals.')
-
+st.write('The aim of this study is to find correlations among health signals to adopt a classification model to find an health algorythm for people')
 
 smoking_df = pd.read_csv('smoking.csv (1).zip')
 
@@ -35,6 +35,8 @@ def get_downloadable_data (df):
 st.download_button('DOWNLOAD DATA SET' , get_downloadable_data(smoking_df), file_name='smoking.csv' )  
 smoking_df.describe()
 
+if st.checkbox('Describe') :
+  st.write(smoking_df.describe())
 
 fig = plt.figure(figsize = (40,40))
 smoking_df.hist(bins = 40)
@@ -88,7 +90,7 @@ if st.checkbox('VIOLIN PLOT ACCORDING TO SOME COLUMNS') :
 smoking_df.nunique().sort_values()
 
 
-st.header("percentage of smoking condidates")
+st.header("Percentages of Smokers among Candidates")
 
 col_1, col_2 = st.columns(2)
 
@@ -96,13 +98,13 @@ with col_1 :
   fig = plt.figure(figsize= (8,4))
   smoking_df['gender'].value_counts().plot.pie(explode=[0,0.3],autopct=lambda x: str(x)[:4] + '%', shadow =True)
   st.write(fig)
-  st.caption('showing percentage of genders of condidates')
+  st.caption('Gender Share among Candidates')
 
 with col_2 :
   fig =plt.figure(figsize= (8,4))
   smoking_df['smoking'].value_counts().plot.pie(explode=[0,0.3],autopct=lambda x: str(x)[:4] + '%', shadow =True)
   st.write(fig)
-  st.caption ('smoking and non smoking')
+  st.caption ('Smokers Proportion')
 
 
 if st.checkbox('Age of condidates') :
@@ -414,7 +416,7 @@ def train_model(x , y , model , random_state = 42 , test_size= 0.2):
     model.fit(x_train, y_train)
     y_pred = model.predict(x_test)
     print ('accuracy = ' , accuracy_score(y_pred, y_test ))
-
+st.write('This MAchine learning method was adopted as the RandomForest Classification had the highest accuracy among all, The five mentioned indexes had the highest influence on the dataframe according to the Feature Importance algorythm')
 if st.checkbox("RandomForestClassifier on 'hemoglobin', 'gender' , 'Gtp' , 'triglyceride', 'height(cm)'") :
      x = smoking_df[['hemoglobin', 'gender' , 'Gtp' , 'triglyceride', 'height(cm)']]
      y = smoking_df [ 'smoking']
@@ -430,7 +432,7 @@ y = smoking_df [ 'smoking']
  
 if st.checkbox("Random forest (5 columns only) Report") :
  # Random forest (5 columns only) Report
-  st.write(classification_report(y_test, y_pred))
+   st.write(classification_report(y_test, y_pred))
 if st.checkbox("Random forest KFOLD (5 columns only)") :
   kf = KFold(n_splits=10, shuffle=True, random_state=42)
   accuracies = []
