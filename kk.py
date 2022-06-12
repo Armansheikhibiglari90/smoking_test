@@ -20,7 +20,7 @@ from pandas.core.algorithms import mode
 st.header('SMOKING ANALYSIS') 
 st.write('This dataset is a collection of basic health biological signal data. ')
 st.write('The goal is to determine the presence or absence of smoking through bio-signals.')
-st.write('The aim of this study is to find correlations among health signals to adopt a classification model to find an health algorythm for people')
+st.write('The Aim of this study is to find correlations among health signals to adopt a classification model to find an health algorythm for people')
 
 smoking_df = pd.read_csv('smoking.csv (1).zip')
 
