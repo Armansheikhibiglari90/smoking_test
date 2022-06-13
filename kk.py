@@ -38,14 +38,16 @@ smoking_df.describe()
 numeric_columns = smoking_df.select_dtypes(['float64', 'float32', 'int32', 'int64']).columns
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
+if st.checkbox('Describe') :
+  st.write(smoking_df.describe())
+
 st.sidebar.subheader("Histogram")
 select_box3 = st.sidebar.selectbox(label="Feature", options=numeric_columns)
 histogram_slider = st.sidebar.slider(label="Number of Bins",min_value=5, max_value=100, value=30)
 sns.distplot(smoking_df[select_box3], bins=histogram_slider)
 st.pyplot()    
 
-if st.checkbox('Describe') :
-  st.write(smoking_df.describe())
+
 
 
 smoking_df.tail(10)
@@ -213,9 +215,10 @@ a = LabelEncoder()
 a.fit(smoking_df["tartar"])
 smoking_df["tartar"]=a.transform(smoking_df["tartar"])
 
-fig = plt.figure(figsize = (10 , 6))
-sns.pairplot(smoking_df, hue = 'smoking', vars = ['fasting blood sugar', 'hemoglobin', 'Gtp','Cholesterol'])
-st.write(fig)
+if st.checkbox('Pairplot') :
+  fig = sns.pairplot(smoking_df, hue = 'smoking', vars = ['fasting blood sugar', 'hemoglobin', 'Gtp','Cholesterol'])
+  plt.subplots_adjust(top=0.9)
+  st.pyplot(fig)
 
 
 y_smoking_df = smoking_df['smoking']
