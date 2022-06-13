@@ -35,12 +35,18 @@ def get_downloadable_data (df):
 st.download_button('DOWNLOAD DATA SET' , get_downloadable_data(smoking_df), file_name='smoking.csv' )  
 smoking_df.describe()
 
+numeric_columns = smoking_df.select_dtypes(['float64', 'float32', 'int32', 'int64']).columns
+st.set_option('deprecation.showPyplotGlobalUse', False)
+
+st.sidebar.subheader("Histogram")
+select_box3 = st.sidebar.selectbox(label="Feature", options=numeric_columns)
+histogram_slider = st.sidebar.slider(label="Number of Bins",min_value=5, max_value=100, value=30)
+sns.distplot(smoking_df[select_box3], bins=histogram_slider)
+st.pyplot()    
+
 if st.checkbox('Describe') :
   st.write(smoking_df.describe())
 
-fig = plt.figure(figsize = (40,40))
-smoking_df.hist(bins = 40)
-st.pyplot(fig)
 
 smoking_df.tail(10)
 
