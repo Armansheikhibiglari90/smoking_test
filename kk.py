@@ -41,11 +41,12 @@ st.set_option('deprecation.showPyplotGlobalUse', False)
 if st.checkbox('Describe') :
   st.write(smoking_df.describe())
 
-st.sidebar.subheader("Histogram")
-select_box3 = st.sidebar.selectbox(label="Feature", options=numeric_columns)
-histogram_slider = st.sidebar.slider(label="Number of Bins",min_value=5, max_value=100, value=30)
-sns.distplot(smoking_df[select_box3], bins=histogram_slider)
-st.pyplot()    
+if st.sidebar.checkbox('Histogram Plot') :
+   st.sidebar.subheader("Histogram")
+   select_box3 = st.sidebar.selectbox(label="Feature", options=numeric_columns)
+   histogram_slider = st.sidebar.slider(label="Number of Bins",min_value=5, max_value=100, value=30)
+   sns.distplot(smoking_df[select_box3], bins=histogram_slider)
+   st.pyplot()    
 
 
 
@@ -123,17 +124,17 @@ if st.checkbox('Age of condidates') :
    st.write(" Age of Yongest condidates: ")
    st.write(smoking_df['age'].min())
 
-if st.checkbox('smoking condidates') :
-  st.write("smoking condidates : ")
+if st.checkbox('Smoking condidates') :
+  st.write("Smoking condidates : ")
   smoking_df.loc[smoking_df['smoking'] == 1]
 
 smoking_df['age'].value_counts()
 
-if st.checkbox('Number of smoking condidates') :
-   st.write("Number of smoking condidates :")
+if st.checkbox('Number of Smoking condidates') :
+   st.write("Number of Smoking condidates :")
    st.write(smoking_df['smoking'].sum())
 
-if st.checkbox ('AGE OF SMOKING'):
+if st.checkbox ('Number of Smokers in every Age group'):
   _x = smoking_df['age'].value_counts().index
   _y = smoking_df['age'].value_counts()
   fig = plt.figure(figsize= (10,6))
@@ -158,7 +159,7 @@ with st.expander('CHOOSE CRITERIAN'):
      A = smoking_df[smoking_df['smoking']==1]
      fig = plt.figure(figsize=(10,6))
      sns.distplot(A['weight(kg)'],color = 'red')
-     plt.title("weight Distribuuion of Smokers")
+     plt.title("Weight Distribuuion of Smokers")
      st.write(fig)
  else :
      A = smoking_df[smoking_df['smoking']==1]
@@ -168,11 +169,11 @@ with st.expander('CHOOSE CRITERIAN'):
      st.write(fig)
           
 oldest_candidates = smoking_df['age'].sort_values(ascending = False)
-if st.checkbox('oldest_candidates ID') :
+if st.checkbox('oldest Candidates ID') :
   oldest_candidates[:15].index
 
 youngest_condidates=smoking_df['age'].sort_values(ascending = True)
-if st.checkbox(' 10 YOUNGEST_candidates ID') :
+if st.checkbox(' 10 Youngest candidates ID') :
    youngest_condidates[:10].index
 
 if st.checkbox('Mean of age smoking') :
@@ -180,20 +181,19 @@ if st.checkbox('Mean of age smoking') :
   candidates_groupby_age_smoking
 
 
-if st.checkbox('considering genders according to age LDL Cholesterol'):
+if st.checkbox('Considering genders according to age LDL Cholesterol'):
   candidates_groupby =smoking_df.groupby(['gender','smoking'])['age','LDL','Cholesterol'].mean()
   candidates_groupby
-  b = plt.figure(figsize=(10,6))
-  candidates_groupby.plot(kind='bar', title='comparing',figsize=(15, 6))
-  st.write(b)
+  
+  
 
-if st.checkbox("cosider tartar on candidates who are smoking ") :
+if st.checkbox("Consider tartar on candidates who are smoking ") :
   tartar_smoking_people =smoking_df.groupby('tartar')['smoking'].sum()
   fig = tartar_smoking_people
   st.write(fig)
 
 
-if st.checkbox("cosider dental caries on candidates who are smoking") :
+if st.checkbox("Consider dental caries on candidates who are smoking") :
   dental_caries_smoking_people =smoking_df.groupby('dental caries')['smoking'].sum()
   dental_caries_smoking_people
   fig = plt.figure(figsize=(10,6))
@@ -302,7 +302,7 @@ if st.sidebar.checkbox(" Feature Importance Decision Tree ") :
   o = plt.figure(figsize = (14,6))
   model = DecisionTreeClassifier()
   model.fit(x_train, y_train)
-  model.feature_importances_.argsort()
+  sort = model.feature_importances_.argsort()
   plt.barh(smoking_df.columns[sort], model.feature_importances_[sort])
   plt.xlabel("Feature Importance")
   st.write(o)
@@ -319,7 +319,7 @@ if st.sidebar.checkbox("CONFUSION MATRIX Decisiontree") :
 if st.sidebar.checkbox("CONFUSION MATRIX HEAT MAP Decisiontree") :
   p = plt.figure(figsize = (10,6))
   sns.heatmap(cf_matrix,fmt='.0f' , annot = True)
-  plt.title('confusion_matrix_heatmap_DecisionTreeClassifier')
+  plt.title('Confusion_matrix_heatmap_DecisionTreeClassifier')
   plt.xlabel('Predicted Values')
   plt.ylabel('True Values')
   st.write(p)
@@ -371,7 +371,7 @@ with st.expander('SHOW KFOLD ACCURACIES '):
          y_pred = model.predict(x_test)
          accuracy = accuracy_score(y_pred, y_test)
          accuracies.append(accuracy)
-         st.write(i, ') accuracy = ', accuracy)
+         st.write(i, ') Accuracy = ', accuracy)
   
   
       st.write('Mean accuracy: ', np.array(accuracies).mean())
@@ -425,7 +425,7 @@ def train_model(x , y , model , random_state = 42 , test_size= 0.2):
     model.fit(x_train, y_train)
     y_pred = model.predict(x_test)
     print ('accuracy = ' , accuracy_score(y_pred, y_test ))
-st.write('This MAchine learning method was adopted as the RandomForest Classification had the highest accuracy among all, The five mentioned indexes had the highest influence on the dataframe according to the Feature Importance algorythm')
+st.write('This Machine learning method was adopted as the RandomForest Classification had the highest accuracy among all, The five mentioned indexes had the highest influence on the dataframe according to the Feature Importance algorythm')
 if st.checkbox("RandomForestClassifier on 'hemoglobin', 'gender' , 'Gtp' , 'triglyceride', 'height(cm)'") :
      x = smoking_df[['hemoglobin', 'gender' , 'Gtp' , 'triglyceride', 'height(cm)']]
      y = smoking_df [ 'smoking']
@@ -455,6 +455,6 @@ if st.checkbox("Random forest KFOLD (5 columns only)") :
       y_pred = model.predict(x_test)
       accuracy = accuracy_score(y_pred, y_test)
       accuracies.append(accuracy)
-      st.write(i, ') accuracy = ', accuracy)
+      st.write(i, ') Accuracy = ', accuracy)
 
       st.write('Mean accuracy: ', np.array(accuracies).mean())    
